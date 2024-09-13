@@ -16,25 +16,32 @@ function gitButtonAction(){
 	console.log("iFrame -> Test with target origin.");
 	window.parent.postMessage({
 			'func': 'testConsoleMessage',
-			'message': 'Message text from iframe.'
+			'message': 'Test with target origin.'
 		}, "https://*.googleusercontent.com");
 	
 	console.log("iFrame -> Test alert with *.");
 	window.parent.postMessage({
 			'func': 'alertShow',
-			'message': 'Message text from iframe.'
+			'message': 'Test alert with *.'
 		}, "*");
 	
 	console.log("iFrame -> Test postmessage without parent");
 	window.postMessage({
 			'func': 'testConsoleMessage',
-			'message': 'Message text from iframe -> postMessage only.'
+			'message': 'Test postmessage without parent.'
 		}, "*");
-
+		
+	console.log("iFrame -> Test postmessage without parent with target origin");
+	window.postMessage({
+			'func': 'testConsoleMessage',
+			'message': 'Test postmessage without parent with target origin'
+		}, "https://*.googleusercontent.com");
+	
+	var now =(new Date()).toUTCString()
 	console.log("iFrame -> Test set cookies");
 	window.parent.postMessage({
 			'func': 'doSetCookiesWithValue',
-			'message': 'from iFrame'
+			'message': now
 		}, "*");
 
 
