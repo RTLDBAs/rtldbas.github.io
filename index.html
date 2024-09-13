@@ -2,6 +2,75 @@
 <body>
 
   this is test site
+  <div>
+  <button id="gitButton" onclick="gitButtonAction()">Git Button</button>
+  </div>
+  
+<script>
+
+
+function gitButtonAction(){
+	console.log("START gitButtonAction");
+	//window.parent.alertShow("this alert from iFrame");
+	//window.parent.getCookie_NEW("RTL_DBA_PASS_VAULT_OAUTH");
+	console.log("iFrame -> Test with target origin.");
+	window.parent.postMessage({
+			'func': 'testConsoleMessage',
+			'message': 'Message text from iframe.'
+		}, "https://*.googleusercontent.com");
+	
+	console.log("iFrame -> Test alert with *.");
+	window.parent.postMessage({
+			'func': 'alertShow',
+			'message': 'Message text from iframe.'
+		}, "*");
+	
+	console.log("iFrame -> Test postmessage without parent");
+	window.postMessage({
+			'func': 'testConsoleMessage',
+			'message': 'Message text from iframe -> postMessage only.'
+		}, "*");
+
+	console.log("iFrame -> Test set cookies");
+	window.parent.postMessage({
+			'func': 'doSetCookiesWithValue',
+			'message': 'from iFrame'
+		}, "*");
+
+
+	console.log("END gitButtonAction");
+}
+
+</script> 
+
+
+<script>
+////// Receive postMessages from the parent window, if any 
+if (window.addEventListener) {
+    window.addEventListener("message", onMessage, false);        
+} 
+else if (window.attachEvent) {
+    window.attachEvent("onmessage", onMessage, false);
+}
+
+function onMessage(event) {
+    // Check sender origin to be trusted
+	var data = event.data;
+	console.log("Inside iFrame Site onMessage => ", event);
+	console.log("iFrame Site data => ", data);
+    
+	//if (event.origin !== "http://example.com") return;
+
+    if (typeof(window[data.func]) == "function") {
+		console.log("Calling: "+data.func +" Requested by: "+event.origin)
+        window[data.func].call(null, data.message);
+    }
+	else{
+		console.log("iFrame -> received ##message:" + data.message +" ##from: "+event.origin )
+	}
+}
+</script>
+ 
 </body>
 
 </html>
