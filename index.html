@@ -3,10 +3,53 @@
 
   this is test site
   <div>
-  <button id="gitButton" onclick="gitButtonAction()">Git Button</button>
+  <button id="gitButton" onclick="sendACK()">Send ACK</button>
   </div>
-  
+ 
 <script>
+	////// Receive postMessages from the parent window, if any 
+	if (window.addEventListener) {
+		window.addEventListener("message", onMessage, false);        
+	} 
+	else if (window.attachEvent) {
+		window.attachEvent("onmessage", onMessage, false);
+	}
+
+	function onMessage(event) {
+		// Check sender origin to be trusted
+		var data = event.data;
+		console.log("Inside iFrame Site onMessage => ", event);
+		console.log("iFrame Site data => ", data);
+		
+		//if (event.origin !== "http://example.com") return;
+		
+		if(data.action=="authenticate"){
+			console.log("iFrame -> received ##message:" + data.message +" ##from: "+event.origin )
+		}
+		/*
+		if (typeof(window[data.func]) == "function") {
+			console.log("Calling: "+data.func +" Requested by: "+event.origin)
+			window[data.func].call(null, data.message);
+		}
+		else{
+			console.log("iFrame -> received ##message:" + data.message +" ##from: "+event.origin )
+		} */
+	}
+</script>
+<script>
+
+window.addEventListener("load", (event) => {
+	console.log("page is fully loaded");
+	sendACK();
+});
+
+function sendACK(){
+	window.parent.postMessage({
+			'action': 'ACK'
+			'func': '',
+			'message': 'loaded'
+		}, "*");
+}
 
 
 function gitButtonAction(){
@@ -51,32 +94,7 @@ function gitButtonAction(){
 </script> 
 
 
-<script>
-////// Receive postMessages from the parent window, if any 
-if (window.addEventListener) {
-    window.addEventListener("message", onMessage, false);        
-} 
-else if (window.attachEvent) {
-    window.attachEvent("onmessage", onMessage, false);
-}
 
-function onMessage(event) {
-    // Check sender origin to be trusted
-	var data = event.data;
-	console.log("Inside iFrame Site onMessage => ", event);
-	console.log("iFrame Site data => ", data);
-    
-	//if (event.origin !== "http://example.com") return;
-
-    if (typeof(window[data.func]) == "function") {
-		console.log("Calling: "+data.func +" Requested by: "+event.origin)
-        window[data.func].call(null, data.message);
-    }
-	else{
-		console.log("iFrame -> received ##message:" + data.message +" ##from: "+event.origin )
-	}
-}
-</script>
  
 </body>
 
