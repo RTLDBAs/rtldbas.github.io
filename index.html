@@ -91,7 +91,7 @@ body {
 			console.log("iFrame -> received ##message:" + data.message +" ##from: "+event.origin );
 			//signInWighGoogle(data.message);
 			if (event.origin == parentOrigin) 
-				getAuthenticationByGoogle(data.message);
+				getAuthenticationByGoogle(JSON.parse(data.message));
 			else
 				console.log("Parent origin not mached!");
 		}
