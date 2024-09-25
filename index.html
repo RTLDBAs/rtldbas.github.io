@@ -166,7 +166,7 @@ function getAuthenticationByGoogle(parameters){
 	  }
 	});
 	console.log("getAuthenticationByGoogle => " , gClient)
-	gClient.requestCode();
+	gClient.requestAccessToken();
 	//console.log("gClient.access_token => " , code);
 
 }
