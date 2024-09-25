@@ -161,7 +161,7 @@ function getAuthenticationByGoogle(parameters){
 			'message': tokenResponse.access_token
 		}, parentOrigin);
 	  },
-	  error_callback (type) => {
+	  error_callback: (type) => {
 		console.log('iFrame -> tokenResponse.error: ', type);
 	  }
 	});
