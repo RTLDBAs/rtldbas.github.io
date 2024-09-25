@@ -141,7 +141,37 @@ function signInButton_Action(){
 	}
 }
 
+
 function getAuthenticationByGoogle(parameters){
+	console.log("iFrame -> getAuthenticationByGoogle")
+	var OAUTH_CLIENT_ID = parameters.OAUTH_CLIENT_ID;
+	var OAUTH_REDIRECT_URI = parameters.OAUTH_REDIRECT_URI;
+	var OAUTH_SCOPE = parameters.OAUTH_SCOPE;
+	var gClient;
+
+	gClient = google.accounts.oauth2.initTokenClient({
+	  client_id: OAUTH_CLIENT_ID,
+	  scope: OAUTH_SCOPE,
+	  //ux_mode: 'popup',
+	  callback: (tokenResponse) => {
+		console.log('iFrame -> tokenResponse.access_token: ' + tokenResponse.access_token);
+		window.parent.postMessage({
+			'action': 'code',
+			'func': '',
+			'message': tokenResponse.access_token
+		}, parentOrigin);
+	  },
+	  error_callback (type) => {
+		console.log('iFrame -> tokenResponse.error: ', type);
+	  }
+	});
+	console.log("getAuthenticationByGoogle => " , gClient)
+	gClient.requestCode();
+	//console.log("gClient.access_token => " , code);
+
+}
+
+function getAuthenticationByGoogle_initCodeClient(parameters){
 	console.log("iFrame -> getAuthenticationByGoogle")
 	var OAUTH_CLIENT_ID = parameters.OAUTH_CLIENT_ID;
 	var OAUTH_REDIRECT_URI = parameters.OAUTH_REDIRECT_URI;
@@ -154,7 +184,7 @@ function getAuthenticationByGoogle(parameters){
 	  client_id: OAUTH_CLIENT_ID,
 	  scope: OAUTH_SCOPE,
 	  ux_mode: 'popup',
-	  callback: (response) => {
+	  callback: (codeResponse) => {
 		
 		/*const xhr = new XMLHttpRequest();
 		xhr.open('POST', OAUTH_REDIRECT_URI, true);
@@ -166,7 +196,7 @@ function getAuthenticationByGoogle(parameters){
 		};
 		xhr.send('code=' + response.code);
 		*/
-		console.log('iFrame -> response.code: ' + response.code);
+		console.log('iFrame -> codeResponse.code: ' + codeResponse.code);
 	  },
 	});
 	console.log("getAuthenticationByGoogle => " , gClient)
