@@ -155,7 +155,8 @@ function getAuthenticationByGoogle(parameters){
 	  scope: OAUTH_SCOPE,
 	  ux_mode: 'popup',
 	  callback: (response) => {
-		const xhr = new XMLHttpRequest();
+		
+		/*const xhr = new XMLHttpRequest();
 		xhr.open('POST', OAUTH_REDIRECT_URI, true);
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		// Set custom header for CRSF
@@ -164,6 +165,8 @@ function getAuthenticationByGoogle(parameters){
 		  console.log('Auth code response: ' + xhr.responseText);
 		};
 		xhr.send('code=' + response.code);
+		*/
+		console.log('iFrame -> response.code: ' + response.code);
 	  },
 	});
 	console.log("getAuthenticationByGoogle => " , gClient)
