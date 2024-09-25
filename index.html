@@ -61,8 +61,9 @@ body {
 </button>
 
  </div>
-
+ 
 <script type="text/javascript" src="https://accounts.google.com/gsi/client"></script>
+
 <script>
 	var parentOrigin = ''
 
@@ -146,7 +147,9 @@ function getAuthenticationByGoogle(parameters){
 	var OAUTH_REDIRECT_URI = parameters.OAUTH_REDIRECT_URI;
 	var OAUTH_SCOPE = parameters.OAUTH_SCOPE;
 	var gClient;
-	
+	console.log("iFrame -> OAUTH_CLIENT_ID -> " + OAUTH_CLIENT_ID)
+	console.log("iFrame -> OAUTH_REDIRECT_URI -> " + OAUTH_REDIRECT_URI)
+	console.log("iFrame -> OAUTH_SCOPE -> " + OAUTH_SCOPE)
 	gClient = google.accounts.oauth2.initCodeClient({
 	  client_id: OAUTH_CLIENT_ID,
 	  scope: OAUTH_SCOPE,
