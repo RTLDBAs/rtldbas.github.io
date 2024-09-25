@@ -51,9 +51,6 @@ body {
 </head>
 
 <body>
- <!-- <div>
-  <button id="gitButton" onclick="sendACK()">Send ACK</button>
-  </div> -->
   <div><span id="status" style="color:red;font-size:20px"></span></div>
  <div>
  <button type="button" onclick="signInButton_Action()" class="login-with-google-btn" >
@@ -78,8 +75,7 @@ body {
 	function onMessage(event) {
 		// Check sender origin to be trusted
 		var data = event.data;
-		console.log("Inside iFrame Site onMessage => ", event);
-		console.log("iFrame Site data => ", data);
+		console.log("iFrame onMessage data => ", data);
 		
 		//if (event.origin !== "http://example.com") return;
 		
@@ -89,7 +85,6 @@ body {
 		}
 		else if(data.action=="authenticate"){
 			console.log("iFrame -> received ##message:" + data.message +" ##from: "+event.origin );
-			//signInWighGoogle(data.message);
 			if (event.origin == parentOrigin) 
 				getAuthenticationByGoogle(JSON.parse(data.message));
 			else
@@ -97,20 +92,14 @@ body {
 		}
 		else if(data.action=="setStatus"){
 			console.log("iFrame -> received ##message:" + data.message +" ##from: "+event.origin );
-			//signInWighGoogle(data.message);
 			if (event.origin == parentOrigin) 
 				setStatus(data.message);
 			else
 				console.log("Parent origin not mached!");
 		}
-		/*
-		if (typeof(window[data.func]) == "function") {
-			console.log("Calling: "+data.func +" Requested by: "+event.origin)
-			window[data.func].call(null, data.message);
+		else {
+			console.log("Inside iFrame onMessage -> Unknown Action Received -> event =>", event);
 		}
-		else{
-			console.log("iFrame -> received ##message:" + data.message +" ##from: "+event.origin )
-		} */
 	}
 </script>
 <script>
@@ -130,6 +119,7 @@ function sendACK(){
 
 function signInButton_Action(){
 	if(parentOrigin){
+		setStatus("");
 		window.parent.postMessage({
 				'action': 'request',
 				'func': '',
@@ -137,10 +127,10 @@ function signInButton_Action(){
 			}, parentOrigin);
 	}
 	else {
+		setStatus("Reload and Try again!");
 		console.log("signInButton_Action => Parent origin cant be blank!!");
 	}
 }
-
 
 function getAuthenticationByGoogle(parameters){
 	console.log("iFrame -> getAuthenticationByGoogle")
@@ -152,65 +142,22 @@ function getAuthenticationByGoogle(parameters){
 	gClient = google.accounts.oauth2.initTokenClient({
 	  client_id: OAUTH_CLIENT_ID,
 	  scope: OAUTH_SCOPE,
-	  //ux_mode: 'popup',
 	  callback: (tokenResponse) => {
 		console.log('iFrame -> tokenResponse.access_token: ' + tokenResponse.access_token);
 		window.parent.postMessage({
-			'action': 'code',
+			'action': 'access_token',
 			'func': '',
-			'message': tokenResponse.access_token
+			'access_token': tokenResponse.access_token
 		}, parentOrigin);
 	  },
 	  error_callback: (type) => {
 		console.log('iFrame -> tokenResponse.error: ', type);
+		setStatus("Try again!");
 	  }
 	});
 	console.log("getAuthenticationByGoogle => " , gClient)
 	gClient.requestAccessToken();
-	//console.log("gClient.access_token => " , code);
-
 }
-
-function getAuthenticationByGoogle_initCodeClient(parameters){
-	console.log("iFrame -> getAuthenticationByGoogle")
-	var OAUTH_CLIENT_ID = parameters.OAUTH_CLIENT_ID;
-	var OAUTH_REDIRECT_URI = parameters.OAUTH_REDIRECT_URI;
-	var OAUTH_SCOPE = parameters.OAUTH_SCOPE;
-	var gClient;
-	console.log("iFrame -> OAUTH_CLIENT_ID -> " + OAUTH_CLIENT_ID)
-	console.log("iFrame -> OAUTH_REDIRECT_URI -> " + OAUTH_REDIRECT_URI)
-	console.log("iFrame -> OAUTH_SCOPE -> " + OAUTH_SCOPE)
-	gClient = google.accounts.oauth2.initCodeClient({
-	  client_id: OAUTH_CLIENT_ID,
-	  scope: OAUTH_SCOPE,
-	  ux_mode: 'popup',
-	  callback: (codeResponse) => {
-		
-		/*const xhr = new XMLHttpRequest();
-		xhr.open('POST', OAUTH_REDIRECT_URI, true);
-		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-		// Set custom header for CRSF
-		xhr.setRequestHeader('X-Requested-With', 'XmlHttpRequest');
-		xhr.onload = function() {
-		  console.log('Auth code response: ' + xhr.responseText);
-		};
-		xhr.send('code=' + response.code);
-		*/
-		console.log('iFrame -> codeResponse.code: ' + codeResponse.code);
-	  },
-	});
-	console.log("getAuthenticationByGoogle => " , gClient)
-	var code = gClient.requestCode();
-	console.log("gClient.requestCode => " , code);
-	
-	window.parent.postMessage({
-		'action': 'code',
-		'func': '',
-		'message': code
-	}, parentOrigin);
-
-}
-
 
 function setStatus(message){
 	const status = document.getElementById('status');
@@ -218,45 +165,6 @@ function setStatus(message){
 }
 
 
-
-function gitButtonAction(){
-	console.log("START gitButtonAction");
-	//window.parent.alertShow("this alert from iFrame");
-	//window.parent.getCookie_NEW("RTL_DBA_PASS_VAULT_OAUTH");
-	console.log("iFrame -> Test with target origin.");
-	window.parent.postMessage({
-			'func': 'testConsoleMessage',
-			'message': 'Test with target origin.'
-		}, "https://*.googleusercontent.com");
-	
-	console.log("iFrame -> Test alert with *.");
-	window.parent.postMessage({
-			'func': 'alertShow',
-			'message': 'Test alert with *.'
-		}, "*");
-	
-	console.log("iFrame -> Test postmessage without parent");
-	window.postMessage({
-			'func': 'testConsoleMessage',
-			'message': 'Test postmessage without parent.'
-		}, "*");
-		
-	console.log("iFrame -> Test postmessage without parent with target origin");
-	window.postMessage({
-			'func': 'testConsoleMessage',
-			'message': 'Test postmessage without parent with target origin'
-		}, "https://*.googleusercontent.com");
-	
-	var now =(new Date()).toUTCString()
-	console.log("iFrame -> Test set cookies");
-	window.parent.postMessage({
-			'func': 'doSetCookiesWithValue',
-			'message': now
-		}, "*");
-
-
-	console.log("END gitButtonAction");
-}
 
 </script> 
 
